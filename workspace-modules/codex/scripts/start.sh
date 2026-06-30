@@ -4,15 +4,21 @@ source "$HOME"/.bashrc
 set -o errexit
 set -o pipefail
 
-command_exists() {
-  command -v "$1" > /dev/null 2>&1
-}
-
-if [ -f "$HOME/.nvm/nvm.sh" ]; then
-  source "$HOME"/.nvm/nvm.sh
+# Shared helpers (command_exists, setup_node_path, ensure_cd)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPERS="${SCRIPT_DIR}/../../shared/scripts/helpers.sh"
+if [ -f "$HELPERS" ]; then
+  source "$HELPERS"
 else
-  export PATH="$HOME/.npm-global/bin:$PATH"
+  command_exists() { command -v "$1" > /dev/null 2>&1; }
+  ensure_cd() {
+    local dir="$1"
+    mkdir -p "$dir" 2>/dev/null || true
+    cd "$dir" || { printf "Error: Could not change to directory '%s'.\\n" "$dir"; exit 1; }
+  }
 fi
+
+setup_node_path
 
 printf "Version: %s\n" "$(codex --version)"
 set -o nounset
@@ -131,23 +137,7 @@ validate_codex_installation() {
 }
 
 setup_workdir() {
-  if [ -d "${ARG_CODEX_START_DIRECTORY}" ]; then
-    printf "Directory '%s' exists. Changing to it.\\n" "${ARG_CODEX_START_DIRECTORY}"
-    cd "${ARG_CODEX_START_DIRECTORY}" || {
-      printf "Error: Could not change to directory '%s'.\\n" "${ARG_CODEX_START_DIRECTORY}"
-      exit 1
-    }
-  else
-    printf "Directory '%s' does not exist. Creating and changing to it.\\n" "${ARG_CODEX_START_DIRECTORY}"
-    mkdir -p "${ARG_CODEX_START_DIRECTORY}" || {
-      printf "Error: Could not create directory '%s'.\\n" "${ARG_CODEX_START_DIRECTORY}"
-      exit 1
-    }
-    cd "${ARG_CODEX_START_DIRECTORY}" || {
-      printf "Error: Could not change to directory '%s'.\\n" "${ARG_CODEX_START_DIRECTORY}"
-      exit 1
-    }
-  fi
+  ensure_cd "${ARG_CODEX_START_DIRECTORY}"
 }
 
 build_codex_args() {

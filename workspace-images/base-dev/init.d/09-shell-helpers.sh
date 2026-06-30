@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[shell-helpers] %s\n' "$*"; }
+INIT_TAG="shell-helpers"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- LazyVim setup (first start only) ---
 if [ ! -d "$HOME/.config/nvim" ] && [ -d /opt/lazyvim-starter/config ]; then

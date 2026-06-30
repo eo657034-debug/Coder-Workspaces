@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[git-init] %s\n' "$*"; }
+INIT_TAG="git-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- GitHub auth ---
 if [[ -n "${GH_TOKEN:-}" ]] && command -v gh >/dev/null 2>&1; then

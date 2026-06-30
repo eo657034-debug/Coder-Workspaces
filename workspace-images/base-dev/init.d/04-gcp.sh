@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[gcp-init] %s\n' "$*"; }
+INIT_TAG="gcp-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- Default GCP project when none provided (no secrets) ---
 if command -v gcloud >/dev/null 2>&1; then

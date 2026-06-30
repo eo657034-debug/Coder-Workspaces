@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[docker-init] %s\n' "$*"; }
+INIT_TAG="docker-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 SOCK_PATH="/var/run/docker.sock"
 DOCKER_HOST_LOCAL="unix://${SOCK_PATH}"
 

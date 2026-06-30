@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[starship-init] %s\n' "$*"; }
+INIT_TAG="starship-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- Starship prompt (Lion theme) ---
 # Ensure .bashrc exists

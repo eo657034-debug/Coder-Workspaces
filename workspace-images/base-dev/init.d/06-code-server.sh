@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[code-server-init] %s\n' "$*"; }
+INIT_TAG="code-server-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- Pre-configure code-server workspace trust ---
 # Headless browser sessions use ephemeral profiles and trigger trust dialogs,

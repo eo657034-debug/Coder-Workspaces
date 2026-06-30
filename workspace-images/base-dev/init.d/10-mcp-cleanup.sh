@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[mcp-cleanup-init] %s\n' "$*"; }
+INIT_TAG="mcp-cleanup-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # Start the periodic orphan reaper in the background.
 # This is a safety net — the primary defense is mcp-wrap setting

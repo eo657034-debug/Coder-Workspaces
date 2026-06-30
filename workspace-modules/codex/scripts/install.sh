@@ -3,9 +3,19 @@ source "$HOME"/.bashrc
 
 BOLD='\033[0;1m'
 
-command_exists() {
-  command -v "$1" > /dev/null 2>&1
-}
+# Shared helpers (command_exists, setup_node_path, ensure_cd, npm_global_install)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPERS="${SCRIPT_DIR}/../../shared/scripts/helpers.sh"
+if [ -f "$HELPERS" ]; then
+  source "$HELPERS"
+else
+  command_exists() { command -v "$1" > /dev/null 2>&1; }
+  ensure_cd() {
+    local dir="$1"
+    mkdir -p "$dir" 2>/dev/null || true
+    cd "$dir" || { printf "Error: Could not change to directory '%s'.\\n" "$dir"; exit 1; }
+  }
+fi
 set -o errexit
 set -o pipefail
 set -o nounset
@@ -59,28 +69,8 @@ function install_codex() {
   if [ "${ARG_INSTALL}" = "true" ]; then
     install_node
 
-    if ! command_exists nvm; then
-      printf "which node: %s\n" "$(which node)"
-      printf "which npm: %s\n" "$(which npm)"
-
-      mkdir -p "$HOME"/.npm-global
-
-      npm config set prefix "$HOME/.npm-global"
-
-      export PATH="$HOME/.npm-global/bin:$PATH"
-
-      if ! grep -q "export PATH=$HOME/.npm-global/bin:\$PATH" ~/.bashrc; then
-        echo "export PATH=$HOME/.npm-global/bin:\$PATH" >> ~/.bashrc
-      fi
-    fi
-
     printf "%s Installing Codex CLI\n" "${BOLD}"
-
-    if [ -n "$ARG_CODEX_VERSION" ]; then
-      npm install -g "@openai/codex@$ARG_CODEX_VERSION"
-    else
-      npm install -g "@openai/codex"
-    fi
+    npm_global_install "@openai/codex" "$ARG_CODEX_VERSION"
     printf "%s Successfully installed Codex CLI. Version: %s\n" "${BOLD}" "$(codex --version)"
   fi
 }
@@ -156,13 +146,7 @@ function add_instruction_prompt_if_exists() {
       echo -e "\n${ARG_CODEX_INSTRUCTION_PROMPT}" >> "${AGENTS_PATH}"
     fi
 
-    if [ ! -d "${ARG_CODEX_START_DIRECTORY}" ]; then
-      printf "Creating start directory '%s'\\n" "${ARG_CODEX_START_DIRECTORY}"
-      mkdir -p "${ARG_CODEX_START_DIRECTORY}" || {
-        printf "Error: Could not create directory '%s'.\\n" "${ARG_CODEX_START_DIRECTORY}"
-        exit 1
-      }
-    fi
+    ensure_cd "${ARG_CODEX_START_DIRECTORY}"
   else
     printf "AGENTS.md instruction prompt is not set.\n"
   fi

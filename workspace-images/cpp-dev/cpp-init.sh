@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[cpp-init] %s\n' "$*"; }
+INIT_TAG="cpp-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 log "Setting up C++ development environment"
 
 # Create necessary directories
 log "Creating development directories"
-mkdir -p /home/coder/projects/cpp
-mkdir -p /home/coder/.cache/ccache
-mkdir -p /home/coder/.local/share/cpp-templates
-chown -R coder:coder /home/coder/projects /home/coder/.cache /home/coder/.local
+ensure_dirs /home/coder/projects/cpp /home/coder/.cache/ccache /home/coder/.local/share/cpp-templates
 
 # Add C++ development helper functions to bashrc (idempotent)
 if ! grep -q "# --- C++ development helpers ---" /home/coder/.bashrc; then
@@ -375,7 +373,7 @@ EOF
 fi
 
 # Ensure ownership of all created files
-chown -R coder:coder /home/coder/.bashrc /home/coder/.local /home/coder/.cache /home/coder/.clang-format 2>/dev/null || true
+fix_coder_ownership /home/coder/.bashrc /home/coder/.local /home/coder/.cache /home/coder/.clang-format
 
 
 log "C++ development environment setup complete"

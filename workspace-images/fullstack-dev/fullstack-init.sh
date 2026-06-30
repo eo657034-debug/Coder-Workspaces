@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[fullstack-init] %s\n' "$*"; }
+INIT_TAG="fullstack-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 log "Setting up full-stack development environment"
 
 # Create fullstack-specific directories (Python dirs handled by python-init.sh,
 # Node.js dirs handled by nextjs-init.sh — both run before this script)
 log "Creating fullstack-specific directories"
-mkdir -p /home/coder/projects/fullstack
-chown -R coder:coder /home/coder/projects/fullstack
+ensure_dirs /home/coder/projects/fullstack
 
 # Add full-stack development helper functions to bashrc (idempotent)
 if ! grep -q "# --- Full-stack development helpers ---" /home/coder/.bashrc; then
