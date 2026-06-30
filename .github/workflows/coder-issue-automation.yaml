@@ -26,8 +26,9 @@ jobs:
     steps:
       - name: Determine preset
         id: preset
+        env:
+          LABEL: ${{ github.event.label.name }}
         run: |
-          LABEL="${{ github.event.label.name }}"
           AGENT="${LABEL#coder-}"
           case "$AGENT" in
             claude) PRESET="Issue Automation - Claude" ;;

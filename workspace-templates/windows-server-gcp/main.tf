@@ -115,8 +115,14 @@ data "coder_parameter" "rdp_password" {
   type         = "string"
   form_type    = "input"
   mutable      = true
-  default      = "CoderRDP2024!"
+  default      = ""
+  description  = "Required. Set a strong, unique password for RDP access."
   order        = 9
+
+  validation {
+    min = 12
+    error = "Password must be at least 12 characters long."
+  }
 }
 
 data "coder_parameter" "rdp_source_cidrs" {
@@ -124,7 +130,8 @@ data "coder_parameter" "rdp_source_cidrs" {
   display_name = "Allowed RDP CIDRs (comma-separated)"
   type         = "string"
   form_type    = "input"
-  default      = "0.0.0.0/0"
+  default      = ""
+  description  = "Required. Restrict RDP access to specific IP ranges (e.g. 203.0.113.0/24). Do not use 0.0.0.0/0 in production."
   order        = 10
 }
 
