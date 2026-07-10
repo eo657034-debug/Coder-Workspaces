@@ -110,17 +110,18 @@ chown -R coder:coder /home/coder/.jupyter
 
 # Create a basic Jupyter config if it doesn't exist
 if [[ ! -f /home/coder/.jupyter/jupyter_lab_config.py ]]; then
-    cat > /home/coder/.jupyter/jupyter_lab_config.py <<'EOF'
+    JUPYTER_TOKEN=$(python3 -c "import secrets; print(secrets.token_hex(24))")
+    cat > /home/coder/.jupyter/jupyter_lab_config.py <<EOF
 # Jupyter Lab configuration
 c.ServerApp.ip = '0.0.0.0'
 c.ServerApp.port = 8888
 c.ServerApp.open_browser = False
-c.ServerApp.allow_origin = '*'
+c.ServerApp.allow_origin = ''
 c.ServerApp.allow_root = True
-c.ServerApp.token = ''
-c.ServerApp.password = ''
+c.ServerApp.token = '${JUPYTER_TOKEN}'
 EOF
     chown coder:coder /home/coder/.jupyter/jupyter_lab_config.py
+    log "Jupyter token generated. Access at http://localhost:8888/?token=${JUPYTER_TOKEN}"
 fi
 
 # Create common Python project structure directories

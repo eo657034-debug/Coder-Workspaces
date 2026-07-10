@@ -107,30 +107,21 @@ locals {
   auto_mount_remote   = data.coder_parameter.auto_mount_remote.value
   ssh_key_filename    = data.coder_parameter.ssh_key_filename.value
 
-  vm_presets = {
-    vm1 = {
-      name          = "watchparty-vm"
-      description   = "Preset for watchparty-vm (170.9.232.54)"
-      icon          = "/icon/terminal.svg"
-      workspace_dir = "/workspaces/vm1-gateway"
-      vm_host       = "170.9.232.54"
-      vm_user       = "neil"
-      vm_port       = "22"
-      remote_path   = "/home/neil"
-      ssh_key       = "id_ed25519"
-    }
-    vm2 = {
-      name          = "neil-dev"
-      description   = "Preset for neil-dev (163.192.217.205)"
-      icon          = "/icon/terminal.svg"
-      workspace_dir = "/workspaces/vm2-gateway"
-      vm_host       = "163.192.217.205"
-      vm_user       = "ubuntu"
-      vm_port       = "22"
-      remote_path   = "/home/ubuntu"
-      ssh_key       = "id_ed25519"
-    }
-  }
+  # To add VM presets, create entries here with actual host details.
+  # Do not commit real IP addresses to public repositories.
+  # Example:
+  #   vm1 = {
+  #     name          = "my-vm"
+  #     description   = "Preset for my-vm"
+  #     icon          = "/icon/terminal.svg"
+  #     workspace_dir = "/workspaces/vm1-gateway"
+  #     vm_host       = "10.0.0.1"
+  #     vm_user       = "ubuntu"
+  #     vm_port       = "22"
+  #     remote_path   = "/home/ubuntu"
+  #     ssh_key       = "id_ed25519"
+  #   }
+  vm_presets = {}
 }
 
 data "coder_workspace_preset" "bare_vms" {
