@@ -11,7 +11,7 @@ RUN chmod +x /tmp/install-python.sh && /tmp/install-python.sh && rm /tmp/install
 RUN python3 -m pip install --no-cache-dir --break-system-packages \
     fastapi uvicorn sqlalchemy alembic
 
-# Python ENV vars (same as python-dev)
+# Python ENV vars (shared with python-dev — same values)
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PIP_NO_CACHE_DIR=1
@@ -28,11 +28,9 @@ RUN chmod +x /usr/local/share/workspace-init.d/30-fullstack-init.sh
 
 USER coder
 
-# User-level Python tools (same as python-dev)
-RUN python3 -m pip install --user --no-cache-dir --break-system-packages \
-    cookiecutter python-dotenv
+# User-level Python tools and directories (shared script — single source of truth)
+COPY workspace-images/shared/python-env.sh /tmp/python-env.sh
+RUN chmod +x /tmp/python-env.sh && /tmp/python-env.sh && rm /tmp/python-env.sh
 
 # Create fullstack-specific directories
-RUN mkdir -p /home/coder/projects/fullstack \
- && mkdir -p /home/coder/.cache/pip \
- && mkdir -p /home/coder/.cache/pypoetry
+RUN mkdir -p /home/coder/projects/fullstack

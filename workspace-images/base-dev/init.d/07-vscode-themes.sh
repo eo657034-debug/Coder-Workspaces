@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[vscode-themes-init] %s\n' "$*"; }
+INIT_TAG="vscode-themes-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 THEMES_DIR="/usr/local/share/shared-assets/vscode-themes"
 CS_EXT_DIR="$HOME/.local/share/code-server/extensions"

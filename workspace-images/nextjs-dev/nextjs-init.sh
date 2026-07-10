@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[nextjs-init] %s\n' "$*"; }
+INIT_TAG="nextjs-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 log "Setting up Next.js development environment"
 
 # Create necessary directories
 log "Creating development directories"
-mkdir -p /home/coder/projects
-mkdir -p /home/coder/.cache/node
-mkdir -p /home/coder/.local/share/pnpm/store
-chown -R coder:coder /home/coder/projects /home/coder/.cache /home/coder/.local
+ensure_dirs /home/coder/projects /home/coder/.cache/node /home/coder/.local/share/pnpm/store
 
 # Add Next.js and React helper functions to bashrc (idempotent)
 if ! grep -q "# --- Next.js development helpers ---" /home/coder/.bashrc; then
@@ -344,14 +342,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 EOF
 
-chown -R coder:coder "$TEMPLATES_DIR"
+fix_coder_ownership "$TEMPLATES_DIR"
 
 # Configure Node.js environment variables in bashrc (idempotent)
-if ! grep -q "NODE_OPTIONS" /home/coder/.bashrc; then
-    cat >> /home/coder/.bashrc <<'EOF'
-
-# --- Next.js development environment ---
-export NEXT_TELEMETRY_DISABLED=1
+append_bashrc "# --- Next.js development environment ---" 'export NEXT_TELEMETRY_DISABLED=1
 export NODE_OPTIONS="--max-old-space-size=4096"
 export NPM_CONFIG_UPDATE_NOTIFIER=false
 export NPM_CONFIG_FUND=false
@@ -360,9 +354,7 @@ export PLAYWRIGHT_MCP_CONFIG="$HOME/.playwright/cli.config.json"
 export PLAYWRIGHT_MCP_OUTPUT_DIR="$HOME/.playwright-cli"
 export MCP_SERVER_PLAYWRIGHT_PORT=3001
 export MCP_SERVER_PLAYWRIGHT_HOST=localhost
-# ---
-EOF
-fi
+# ---'
 
 # Set up default prettier config for the user
 log "Setting up Prettier configuration"
@@ -419,7 +411,7 @@ EOF
 fi
 
 # Ensure ownership of all created files
-chown -R coder:coder /home/coder/.bashrc /home/coder/.local /home/coder/.cache 2>/dev/null || true
+fix_coder_ownership /home/coder/.bashrc /home/coder/.local /home/coder/.cache
 
 log "Next.js development environment setup complete"
 log "Use 'create-nextjs [project-name]' to create a new Next.js project"

@@ -2,9 +2,21 @@
 
 BOLD='\033[0;1m'
 source "$HOME"/.bashrc
-command_exists() {
-  command -v "$1" > /dev/null 2>&1
-}
+
+# Shared helpers (command_exists, setup_node_path, ensure_cd, npm_global_install)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPERS="${SCRIPT_DIR}/../../shared/scripts/helpers.sh"
+if [ -f "$HELPERS" ]; then
+  source "$HELPERS"
+else
+  # Fallback for runtime when helpers may be at a different path
+  command_exists() { command -v "$1" > /dev/null 2>&1; }
+  ensure_cd() {
+    local dir="$1"
+    mkdir -p "$dir" 2>/dev/null || true
+    cd "$dir" || { printf "Error: Could not change to directory '%s'.\\n" "$dir"; exit 1; }
+  }
+fi
 
 set -o nounset
 
@@ -41,26 +53,7 @@ function install_gemini() {
     check_dependencies
 
     printf "%s Installing Gemini CLI\n" "${BOLD}"
-
-    NPM_GLOBAL_PREFIX="${HOME}/.npm-global"
-    if [ ! -d "$NPM_GLOBAL_PREFIX" ]; then
-      mkdir -p "$NPM_GLOBAL_PREFIX"
-    fi
-
-    npm config set prefix "$NPM_GLOBAL_PREFIX"
-
-    export PATH="$NPM_GLOBAL_PREFIX/bin:$PATH"
-
-    if [ -n "$ARG_GEMINI_VERSION" ]; then
-      npm install -g "@google/gemini-cli@$ARG_GEMINI_VERSION"
-    else
-      npm install -g "@google/gemini-cli"
-    fi
-
-    if ! grep -q "export PATH=\"\$HOME/.npm-global/bin:\$PATH\"" "$HOME/.bashrc"; then
-      echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> "$HOME/.bashrc"
-    fi
-
+    npm_global_install "@google/gemini-cli" "$ARG_GEMINI_VERSION"
     printf "%s Successfully installed Gemini CLI. Version: %s\n" "${BOLD}" "$(gemini --version)"
   fi
 }
@@ -115,23 +108,7 @@ function append_extensions_to_settings_json() {
 
 function add_system_prompt_if_exists() {
   if [ -n "${GEMINI_SYSTEM_PROMPT:-}" ]; then
-    if [ -d "${GEMINI_START_DIRECTORY}" ]; then
-      printf "Directory '%s' exists. Changing to it.\\n" "${GEMINI_START_DIRECTORY}"
-      cd "${GEMINI_START_DIRECTORY}" || {
-        printf "Error: Could not change to directory '%s'.\\n" "${GEMINI_START_DIRECTORY}"
-        exit 1
-      }
-    else
-      printf "Directory '%s' does not exist. Creating and changing to it.\\n" "${GEMINI_START_DIRECTORY}"
-      mkdir -p "${GEMINI_START_DIRECTORY}" || {
-        printf "Error: Could not create directory '%s'.\\n" "${GEMINI_START_DIRECTORY}"
-        exit 1
-      }
-      cd "${GEMINI_START_DIRECTORY}" || {
-        printf "Error: Could not change to directory '%s'.\\n" "${GEMINI_START_DIRECTORY}"
-        exit 1
-      }
-    fi
+    ensure_cd "${GEMINI_START_DIRECTORY}"
     touch GEMINI.md
     printf "Setting GEMINI.md\n"
     echo "${GEMINI_SYSTEM_PROMPT}" > GEMINI.md

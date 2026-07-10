@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[python-init] %s\n' "$*"; }
+INIT_TAG="python-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 log "Setting up Python development environment"
 
 # Configure Poetry and microservices workflow
 log "Setting up Poetry for microservices workflow"
 
-# Create Poetry cache directory
-mkdir -p /home/coder/.cache/pypoetry
-chown -R coder:coder /home/coder/.cache/pypoetry
+ensure_dirs /home/coder/.cache/pypoetry
 
 # Configure Poetry settings for local venvs
 poetry config virtualenvs.in-project true 2>/dev/null || true
@@ -126,9 +125,7 @@ fi
 
 # Create common Python project structure directories
 log "Creating Python project directories"
-mkdir -p /home/coder/projects
-mkdir -p /home/coder/.cache/pip
-chown -R coder:coder /home/coder/projects /home/coder/.local /home/coder/.cache /home/coder/.venv
+ensure_dirs /home/coder/projects /home/coder/.cache/pip /home/coder/.local /home/coder/.venv
 
 # Set up pre-commit hooks if in a git repository
 if [[ -d /workspace/.git ]] && command -v pre-commit >/dev/null 2>&1; then
@@ -152,6 +149,6 @@ EOF
 fi
 
 # Ensure ownership of all created files
-chown -R coder:coder /home/coder/.bashrc /home/coder/.jupyter /home/coder/.local 2>/dev/null || true
+fix_coder_ownership /home/coder/.bashrc /home/coder/.jupyter /home/coder/.local
 
 log "Python development environment setup complete"

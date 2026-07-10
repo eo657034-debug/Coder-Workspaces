@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-log() { printf '[hapi-init] %s\n' "$*"; }
+INIT_TAG="hapi-init"
+source /usr/local/share/workspace-init.d/_helpers.sh
 
 # --- HAPI Runner ---
 if [[ -n "${HAPI_HUB_URL:-}" && -n "${HAPI_CLI_API_TOKEN:-}" ]]; then

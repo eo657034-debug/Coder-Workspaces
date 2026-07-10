@@ -154,8 +154,9 @@ RUN chmod +x /usr/local/bin/mcp-wrap /usr/local/bin/mcp-cleanup
 COPY workspace-images/base-dev/system_prompt.txt /usr/local/share/workspace-init.d/system_prompt.txt
 COPY shared-assets/vscode-themes/ /usr/local/share/shared-assets/vscode-themes/
 
+COPY workspace-images/shared/init-helpers.sh /usr/local/share/workspace-init.d/_helpers.sh
 COPY workspace-images/base-dev/init.d/ /usr/local/share/workspace-init.d/
-RUN chmod +x /usr/local/share/workspace-init.d/*.sh
+RUN chmod +x /usr/local/share/workspace-init.d/*.sh /usr/local/share/workspace-init.d/_helpers.sh
 
 COPY workspace-images/base-dev/run-workspace-inits /usr/local/bin/run-workspace-inits
 RUN chmod +x /usr/local/bin/run-workspace-inits
